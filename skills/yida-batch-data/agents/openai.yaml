@@ -1,0 +1,4 @@
+interface:
+  display_name: "宜搭批量数据处理"
+  short_description: "使用本地 yidaapi 框架批量处理宜搭表单数据"
+  default_prompt: "Use $yida-batch-data to batch query, create, update, or delete YiDA form data with the local yidaapi framework."
