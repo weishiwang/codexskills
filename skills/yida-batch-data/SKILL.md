@@ -1,17 +1,19 @@
 ---
 name: yida-batch-data
-description: Batch YiDA data processing with the local yidaapi.js framework. Use when Codex needs to batch query, fetch beyond page limits, create, update, delete, retry, throttle, or process large YiDA form data sets, sub-table data, or process-form records with the framework under E:\浏览器下载\1776499843243_宜搭AI助手V1.5.9\宜搭AI助手V1.5.9\代码.
+description: Batch YiDA data processing with a bundled yidaapi.js framework. Use when Codex needs to batch query, fetch beyond page limits, create, update, delete, retry, throttle, or process large YiDA form data sets, sub-table data, or process-form records.
 ---
 
 # YiDA Batch Data
 
-Use the local framework first for batch YiDA data tasks. The canonical framework is:
+Use the bundled framework first for batch YiDA data tasks:
 
-`E:\浏览器下载\1776499843243_宜搭AI助手V1.5.9\宜搭AI助手V1.5.9\代码\yidaapi.js`
+`assets/framework/yidaapi.js`
+
+The framework file is shipped with this skill so other users can install the skill without relying on the original author's local disk path.
 
 ## Workflow
 
-1. Inspect the current `yidaapi.js` before changing or using it. The file may already contain user edits.
+1. Inspect `assets/framework/yidaapi.js` before changing or using it. Copy it into the target YiDA custom page/form action code when the runtime does not already include these helpers.
 2. Prefer `yidaForm(context)` for normal form data and `yidaFlowForm(context)` for process form data.
 3. Set `.appType(window.pageConfig.appType)` or the explicit app type, then `.formUuid(...)` when the operation needs a form.
 4. Use the built-in batch helpers instead of ad hoc loops:
