@@ -1,0 +1,6 @@
+interface:
+  display_name: "宜搭子表同步自动化"
+  short_description: "创建明细表写入主表子表的集成自动化"
+  default_prompt: "Use $yida-integration-subtable to create an automation that writes detail form records into a main form subtable."
+policy:
+  allow_implicit_invocation: true
