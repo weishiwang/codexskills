@@ -1,49 +1,140 @@
-# yida-integration-subtable
+# Codex YiDA Skills
 
-宜搭集成自动化子表同步专项 Codex Skill。
+This repository contains reusable Codex skills for YiDA/OpenYida development work. Each skill lives under `skills/<skill-name>` and can be copied into a local Codex skills directory.
 
-用于创建这类自动化：
+## Installation
 
-```text
-第二张明细表新增/更新数据
-  -> 匹配第一张主表的一条记录
-  -> 写入这条主表记录里的子表单明细
-  -> 子表行存在则更新，不存在则新增
-```
-
-## 安装
-
-将技能目录复制到你的 Codex skills 目录：
+Install all skills:
 
 ```powershell
-Copy-Item -Recurse -Force .\skills\yida-integration-subtable "$env:USERPROFILE\.codex\skills\openyida\skills\yida-integration-subtable"
+Copy-Item -Recurse -Force .\skills\* "$env:USERPROFILE\.codex\skills\"
 ```
 
-重启 Codex 或重新加载 skills 后，可用：
+Install one skill:
+
+```powershell
+Copy-Item -Recurse -Force .\skills\yida-form-runtime-refresh "$env:USERPROFILE\.codex\skills\yida-form-runtime-refresh"
+```
+
+Restart Codex or reload skills after installation.
+
+## Skills
+
+### `yida-batch-data`
+
+Batch YiDA data processing with a bundled `yidaapi.js` framework.
+
+Use this skill when working with large YiDA datasets or repetitive form-data operations:
+
+- batch query form data
+- read beyond normal page limits
+- batch create records
+- batch update records
+- batch delete records
+- process sub-table data
+- process normal forms and process forms
+- reuse retry/throttle/concurrency helpers instead of writing ad hoc loops
+
+Main bundled resource:
 
 ```text
-$yida-integration-subtable
+skills/yida-batch-data/assets/framework/yidaapi.js
 ```
 
-## 依赖
+Typical helpers include:
 
-- 已安装并登录 `openyida`
-- 已有宜搭应用、主表、明细表
-- 已通过 `openyida get-schema` 确认真实 `formUuid`、`fieldId`、`tableFieldId`
+- `yidaForm(context).loadAll()`
+- `yidaForm(context).loadAllBeyondLimit()`
+- `yidaForm(context).saveallformdata(items)`
+- `yidaForm(context).updataallformdata(items)`
+- `yidaForm(context).deleteallformdata(items)`
+- `yidaFlowForm(context)` for process forms
 
-## 核心命令模式
+### `yida-form-runtime-refresh`
+
+Safe YiDA form runtime refresh after schema edits, with serial-number protection.
+
+Use this skill after modifying a YiDA form schema with `openyida create-form update`, `patch`, `rule`, or a custom schema script, especially when the form contains a `SerialNumberField`.
+
+It prevents a common failure mode where a serial-number field looks correct in schema, but API-created records generate plain values such as `0003` instead of the configured prefix/date rule.
+
+The core rule is:
+
+1. Read the current live `getFormSchemaInfo`.
+2. Build an `updateFormSchemaInfo` payload from the live config.
+3. Preserve important settings such as `formulaType`, `supportSerialNumberField`, title, display title, and navigation state.
+4. Do not use broad hard-coded form config defaults.
+
+Main bundled script:
+
+```powershell
+node C:\Users\Administrator\.codex\skills\yida-form-runtime-refresh\scripts\refresh-form-runtime.js APP_XXX FORM-XXX
+```
+
+Use it immediately after schema changes:
 
 ```bash
-openyida integration create APP_XXX FORM-DETAIL "明细新增写入主表子表" \
+openyida get-schema APP_XXX FORM-XXX > .cache/openyida/project/schema-before.json
+openyida create-form update APP_XXX FORM-XXX .cache/openyida/project/changes.json --force
+node C:/Users/Administrator/.codex/skills/yida-form-runtime-refresh/scripts/refresh-form-runtime.js APP_XXX FORM-XXX
+```
+
+Never manually assign a value to `SerialNumberField` when creating records. Let YiDA generate it.
+
+### `yida-integration-subtable`
+
+YiDA integration automation pattern for syncing detail records into a sub-table on a matched main-form record.
+
+Use this skill when the requirement is:
+
+```text
+Second/detail form record is inserted or updated
+  -> find one matching main-form record
+  -> find one matching row inside a TableField on that main record
+  -> update the row if found, otherwise append a new sub-table row
+```
+
+This is different from normal cross-form create automation. The key is using an update-data node against the main form and setting the target sub-table field.
+
+Typical OpenYida command shape:
+
+```bash
+openyida integration create APP_XXX FORM-DETAIL "Sync detail to main subtable" \
   --events insert \
   --trigger-recursively \
   --update-data-form-uuid FORM-MAIN \
-  --update-data-condition "textField_mainNo:主记录编号:textField_detailMainNo:TextField:Equal" \
+  --update-data-condition "textField_mainNo:MainNo:textField_detailMainNo:TextField:Equal" \
   --update-data-sub-table-field-id tableField_detailRows \
-  --update-data-sub-condition "textField_subDetailNo:明细编号:textField_detailNo:TextField:Equal" \
+  --update-data-sub-condition "textField_subDetailNo:DetailNo:textField_detailNo:TextField:Equal" \
   --update-data-assignment "textField_subDetailNo:processVar:textField_detailNo" \
+  --update-data-assignment "numberField_subAmount:processVar:numberField_detailAmount" \
   --update-data-none-operation add \
   --publish
 ```
 
-关键点：子表同步使用 `UpdateDataNode / dataUpdate`，`subSourceId` 指向目标主表里的 `TableField`，`noneOperation=add` 对应“未获取到数据时 -> 新增一条数据”。
+Important guardrails:
+
+- confirm real `formUuid`, `fieldId`, and `tableFieldId` with `openyida get-schema`
+- use `UpdateDataNode` / `dataUpdate`, not a normal add-data node
+- include `--update-data-sub-condition` for idempotent row updates
+- use `--update-data-none-operation add` when missing rows should be appended
+- show the automation summary before publishing in production
+
+## Repository Layout
+
+```text
+skills/
+  yida-batch-data/
+  yida-form-runtime-refresh/
+  yida-integration-subtable/
+```
+
+Each skill contains a required `SKILL.md`. Some skills also include scripts, references, assets, or UI metadata under `agents/`.
+
+## General YiDA Safety Notes
+
+- Always fetch schema before using field IDs.
+- Do not guess `formUuid`, `fieldId`, `tableFieldId`, or process IDs.
+- For production forms with existing data, keep changes narrowly scoped and verify after saving.
+- For forms with serial numbers or formulas, run `yida-form-runtime-refresh` after schema edits.
+- Do not create or delete business data for testing without explicit user approval.
