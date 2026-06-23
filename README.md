@@ -159,6 +159,30 @@ Important guardrails:
 - keep business value fields as `SelectField`, not `AssociationFormField`
 - run `yida-form-runtime-refresh` after patching forms that contain serial numbers
 
+### `yida-manage-view-config`
+
+Configure YiDA data management page saved views without reopening the browser designer each time.
+
+Use this skill when fixing management-page table display columns, column order, default sort, frozen columns, row height, or saved view defaults for "显示列" and "排序".
+
+Main bundled script:
+
+```powershell
+node .\skills\yida-manage-view-config\scripts\save-manage-view-config.js `
+  --app APP_XXX `
+  --form FORM-XXX `
+  --view VIEW-XXX `
+  --columns "产品编号,中文产品名称,产品系列" `
+  --sort "产品编号:asc"
+```
+
+Important guardrails:
+
+- read the real `viewUuid` from the management page URL
+- resolve labels through `getDataViewPanel` instead of guessing field IDs
+- keep backups under `.cache/openyida/manage-view`
+- re-fetch the view config after saving to verify `content.viewConfig`
+
 ## Repository Layout
 
 ```text
@@ -166,6 +190,7 @@ skills/
   yida-batch-data/
   yida-form-runtime-refresh/
   yida-integration-subtable/
+  yida-manage-view-config/
   yida-select-linkage/
 ```
 

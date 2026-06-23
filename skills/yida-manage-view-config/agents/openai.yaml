@@ -1,0 +1,4 @@
+interface:
+  display_name: "YiDA Manage View Config"
+  short_description: "批量配置宜搭数据管理页默认显示列顺序排序筛选规则配置"
+  default_prompt: "Use $yida-manage-view-config to configure YiDA management page columns and sort order."
