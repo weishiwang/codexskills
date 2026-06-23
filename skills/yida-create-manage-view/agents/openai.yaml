@@ -1,0 +1,4 @@
+interface:
+  display_name: "YiDA Create Manage View"
+  short_description: "Create YiDA management views with filters."
+  default_prompt: "Use $yida-create-manage-view to create filtered YiDA management-page saved views."

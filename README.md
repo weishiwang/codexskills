@@ -183,11 +183,37 @@ Important guardrails:
 - keep backups under `.cache/openyida/manage-view`
 - re-fetch the view config after saving to verify `content.viewConfig`
 
+### `yida-create-manage-view`
+
+Create YiDA data management page saved table views and quick filter tabs without reopening the "新建视图" drawer.
+
+Use this skill when creating filtered management views such as `在售`, `停产`, or `库存预警`, or when setting a new view's data filter, field visibility, display columns, and default sort.
+
+Main bundled script:
+
+```powershell
+node .\skills\yida-create-manage-view\scripts\create-manage-view.js `
+  --app APP_XXX `
+  --form FORM-XXX `
+  --name "在售" `
+  --filter "产品状态:eq:在售" `
+  --columns "产品编号,中文产品名称,产品系列,产品型号,现有库存,产品状态" `
+  --sort "产品编号:asc"
+```
+
+Important guardrails:
+
+- `staticConfig.dataRange` controls "数据过滤条件"
+- `staticConfig.columnFilter` controls "字段显隐"
+- `defaultConfig.showFields` controls table display columns and order
+- use `--dry-run` first for production forms and keep backups under `.cache/openyida`
+
 ## Repository Layout
 
 ```text
 skills/
   yida-batch-data/
+  yida-create-manage-view/
   yida-form-runtime-refresh/
   yida-integration-subtable/
   yida-manage-view-config/
