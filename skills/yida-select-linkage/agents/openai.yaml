@@ -1,0 +1,6 @@
+interface:
+  display_name: "宜搭下拉数据联动"
+  short_description: "用映射表配置一级/二级下拉联动"
+  default_prompt: "Use $yida-select-linkage to configure a YiDA two-level dropdown linkage from a normal mapping form."
+policy:
+  allow_implicit_invocation: true

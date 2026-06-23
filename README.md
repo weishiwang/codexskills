@@ -120,6 +120,45 @@ Important guardrails:
 - use `--update-data-none-operation add` when missing rows should be appended
 - show the automation summary before publishing in production
 
+### `yida-select-linkage`
+
+YiDA dropdown linkage pattern for using a normal mapping form as the source of first-level and second-level `SelectField` options.
+
+Use this skill when the requirement is:
+
+```text
+First select field chooses a category
+  -> second select field only shows mapped options under that category
+  -> source data lives in a normal YiDA mapping form
+```
+
+It captures the YiDA designer pattern:
+
+```text
+First dropdown: option type = relate other form data
+Second dropdown: option type = data linkage
+```
+
+Core formula shape:
+
+```text
+FETCHDISTINCTDATA("FORM-MAP","childFieldId",true,QUERYAND(QUERYEQ("parentMapFieldId",#{mainParentFieldId})))
+```
+
+Bundled helper:
+
+```powershell
+node .\skills\yida-select-linkage\scripts\build-select-linkage-patch.js .\linkage-config.json .\linkage-patch.json
+openyida create-form patch APP_XXX FORM-MAIN .\linkage-patch.json --force
+```
+
+Important guardrails:
+
+- confirm all field IDs with `openyida get-schema`
+- keep mapping condition fields as `TextField` when possible
+- keep business value fields as `SelectField`, not `AssociationFormField`
+- run `yida-form-runtime-refresh` after patching forms that contain serial numbers
+
 ## Repository Layout
 
 ```text
@@ -127,6 +166,7 @@ skills/
   yida-batch-data/
   yida-form-runtime-refresh/
   yida-integration-subtable/
+  yida-select-linkage/
 ```
 
 Each skill contains a required `SKILL.md`. Some skills also include scripts, references, assets, or UI metadata under `agents/`.
