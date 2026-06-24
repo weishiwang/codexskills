@@ -1,5 +1,7 @@
 # Codex YiDA Skills
 
+[English](README.md) | [简体中文](README.zh-CN.md)
+
 This repository contains reusable Codex skills for YiDA/OpenYida development work. Each skill lives under `skills/<skill-name>` and can be copied into a local Codex skills directory.
 
 ## Installation
