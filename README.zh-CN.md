@@ -210,6 +210,39 @@ node .\skills\yida-create-manage-view\scripts\create-manage-view.js `
 - `defaultConfig.showFields` 控制表格显示列及顺序
 - 生产表单先使用 `--dry-run`，并把备份保存在 `.cache/openyida`
 
+### `yida-timer-flow-repair`
+
+排查并修复保存或发布后元数据异常的宜搭定时自动化。
+
+当定时自动化出现以下现象时，使用此技能：
+
+```text
+eventType = 3
+eventName = <未设置>
+formUuid 丢失
+发布后 status 仍然是 n
+switchflow 提示缺少绑定关系
+```
+
+内置辅助脚本：
+
+```powershell
+node .\skills\yida-timer-flow-repair\scripts\diagnose-timer-flow.js `
+  --app APP_XXX `
+  --process LPROC_XXX `
+  --name "自动化名称" `
+  --form FORM-XXX `
+  --output ".cache\openyida\timer-flow"
+```
+
+重要注意事项：
+
+- 定时流详情优先使用 `simpleProcess/getProcessById.json` 或 `simpleProcess/getProcess.json`
+- 优先先从 `pageProcessVersion.json` 解析最新版本的 `processId`，再取详情
+- 当 API 保存路径与设计器真实发布路径不一致时，以设计器内真实发布作为可信修复手段
+- 不要复用未清洗的旧定时流 payload，先检查是否包含其他应用或表单的 ID
+- 修复后重新核对 `eventName`、`formUuid`、`status` 以及定时 `StartNode`
+
 ## 仓库结构
 
 ```text
@@ -220,6 +253,7 @@ skills/
   yida-integration-subtable/
   yida-manage-view-config/
   yida-select-linkage/
+  yida-timer-flow-repair/
 ```
 
 每个技能都包含必需的 `SKILL.md`。部分技能还会在 `agents/` 下包含脚本、参考资料、资源文件或 UI 元数据。

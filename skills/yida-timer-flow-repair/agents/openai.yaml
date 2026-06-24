@@ -1,0 +1,7 @@
+interface:
+  display_name: "宜搭定时流修复"
+  short_description: "排查并修复宜搭定时自动化元数据异常问题"
+  default_prompt: "Use $yida-timer-flow-repair to diagnose why a YiDA timed automation shows 未设置, loses form binding, or fails to publish cleanly."
+policy:
+  allow_implicit_invocation: true
+

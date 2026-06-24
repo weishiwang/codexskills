@@ -210,6 +210,39 @@ Important guardrails:
 - `defaultConfig.showFields` controls table display columns and order
 - use `--dry-run` first for production forms and keep backups under `.cache/openyida`
 
+### `yida-timer-flow-repair`
+
+Diagnose and repair YiDA timed automations whose metadata is broken after save or publish.
+
+Use this skill when a timer automation shows symptoms such as:
+
+```text
+eventType = 3
+eventName = <未设置>
+formUuid disappears
+status stays n after publish
+switchflow reports missing binding
+```
+
+Bundled helper:
+
+```powershell
+node .\skills\yida-timer-flow-repair\scripts\diagnose-timer-flow.js `
+  --app APP_XXX `
+  --process LPROC_XXX `
+  --name "自动化名称" `
+  --form FORM-XXX `
+  --output ".cache\openyida\timer-flow"
+```
+
+Important guardrails:
+
+- use `simpleProcess/getProcessById.json` or `simpleProcess/getProcess.json` for timer-flow detail
+- resolve the latest version `processId` from `pageProcessVersion.json` before detail lookup when possible
+- treat real designer publish as the trusted repair path when API payload parity is uncertain
+- do not reuse copied timer-flow payloads without checking for stale foreign app or form IDs
+- re-check `eventName`, `formUuid`, `status`, and timer `StartNode` after repair
+
 ## Repository Layout
 
 ```text
@@ -220,6 +253,7 @@ skills/
   yida-integration-subtable/
   yida-manage-view-config/
   yida-select-linkage/
+  yida-timer-flow-repair/
 ```
 
 Each skill contains a required `SKILL.md`. Some skills also include scripts, references, assets, or UI metadata under `agents/`.
