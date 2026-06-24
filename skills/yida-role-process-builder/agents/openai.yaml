@@ -1,0 +1,4 @@
+interface:
+  display_name: "YiDA Role Process Builder"
+  short_description: "Create YiDA roles and publish workflows."
+  default_prompt: "Use $yida-role-process-builder to create YiDA roles, bind them to a role group, and publish process-form workflows."

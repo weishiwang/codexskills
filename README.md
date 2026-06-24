@@ -210,6 +210,39 @@ Important guardrails:
 - `defaultConfig.showFields` controls table display columns and order
 - use `--dry-run` first for production forms and keep backups under `.cache/openyida`
 
+### `yida-role-process-builder`
+
+Create and update YiDA platform roles, bind them into a role group, and publish approval workflows as process forms.
+
+Use this skill when a project needs to turn Excel/JSON approval requirements into YiDA process forms:
+
+- create or update YiDA roles through the role-management APIs
+- create/update a role group and bind role UUIDs into it
+- map approval nodes to YiDA roles
+- treat `抄送...` nodes as carbon-copy nodes, not approval roles
+- convert existing normal forms to process forms with `openyida create-process --formUuid`
+- batch publish workflow definitions and record `processCode`/`processId`
+
+Main bundled script:
+
+```powershell
+node .\skills\yida-role-process-builder\scripts\role-process-builder.js roles `
+  --group "北京中拓审批流程角色" `
+  --roles-file .cache\openyida\project\clean-roles.txt `
+  --member-user-id USER_ID_XXX
+
+node .\skills\yida-role-process-builder\scripts\role-process-builder.js publish `
+  --app APP_XXX `
+  --process-list .cache\openyida\project\process-list.json
+```
+
+Important guardrails:
+
+- verify `openyida env --json` before creating roles or publishing
+- do not publish workflow changes without explicit user confirmation
+- keep generated role maps and publish results under `.cache/openyida/<project>/`
+- verify every expected form has `formType: "process"` after publishing
+
 ## Repository Layout
 
 ```text
@@ -219,6 +252,7 @@ skills/
   yida-form-runtime-refresh/
   yida-integration-subtable/
   yida-manage-view-config/
+  yida-role-process-builder/
   yida-select-linkage/
 ```
 

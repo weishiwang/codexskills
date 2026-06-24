@@ -210,6 +210,39 @@ node .\skills\yida-create-manage-view\scripts\create-manage-view.js `
 - `defaultConfig.showFields` 控制表格显示列及顺序
 - 生产表单先使用 `--dry-run`，并把备份保存在 `.cache/openyida`
 
+### `yida-role-process-builder`
+
+创建和编辑宜搭平台角色，把角色绑定到角色组，并将审批需求批量发布为流程表单。
+
+当项目需要把 Excel/JSON 审批需求转换成宜搭流程表单时，使用此技能：
+
+- 通过角色管理 API 创建或更新宜搭角色
+- 创建/更新角色组，并把角色 UUID 绑定进角色组
+- 将审批节点映射到宜搭角色
+- 将 `抄送...` 节点识别为抄送节点，而不是审批角色
+- 使用 `openyida create-process --formUuid` 将普通表单转换为流程表单
+- 批量发布流程定义，并记录 `processCode` / `processId`
+
+主要内置脚本：
+
+```powershell
+node .\skills\yida-role-process-builder\scripts\role-process-builder.js roles `
+  --group "北京中拓审批流程角色" `
+  --roles-file .cache\openyida\project\clean-roles.txt `
+  --member-user-id USER_ID_XXX
+
+node .\skills\yida-role-process-builder\scripts\role-process-builder.js publish `
+  --app APP_XXX `
+  --process-list .cache\openyida\project\process-list.json
+```
+
+重要注意事项：
+
+- 创建角色或发布流程前，先用 `openyida env --json` 核对登录组织
+- 未经用户明确确认，不发布流程变更
+- 角色映射和发布结果写入 `.cache/openyida/<project>/`
+- 发布后验证所有目标表单的 `formType` 都是 `process`
+
 ## 仓库结构
 
 ```text
@@ -219,6 +252,7 @@ skills/
   yida-form-runtime-refresh/
   yida-integration-subtable/
   yida-manage-view-config/
+  yida-role-process-builder/
   yida-select-linkage/
 ```
 
