@@ -83,6 +83,44 @@ node C:/Users/Administrator/.codex/skills/yida-form-runtime-refresh/scripts/refr
 
 Never manually assign a value to `SerialNumberField` when creating records. Let YiDA generate it.
 
+### `yida-association-form-fill`
+
+YiDA form page-JS pattern for filling `AssociationFormField` values from a selected related record.
+
+Use this skill when a form selects one association record and should automatically fill other related association fields, such as:
+
+```text
+Select purchase request
+  -> fill related contract
+  -> fill related project
+  -> fill related supplier
+```
+
+It captures the working association value format:
+
+```js
+[
+  {
+    appType: 'APP_XXX',
+    formUuid: 'FORM-TARGET',
+    formType: 'receipt',
+    instanceId: 'FINST-XXX',
+    title: 'display title',
+    subTitle: 'serial00001'
+  }
+]
+```
+
+Important guardrails:
+
+- set association fields with an array of objects
+- use `instanceId`, not `formInstId`, in the saved value
+- prefer reading the selected source record detail over matching text codes
+- parse `_id` fields and `instValue` defensively because YiDA can return double-encoded association values
+- bind the fill action directly to the source field `onChange`
+- apply schema patches sequentially to avoid one save overwriting another
+- verify in a real browser and remove debug logs before finishing
+
 ### `yida-integration-subtable`
 
 YiDA integration automation pattern for syncing detail records into a sub-table on a matched main-form record.
@@ -247,6 +285,7 @@ Important guardrails:
 
 ```text
 skills/
+  yida-association-form-fill/
   yida-batch-data/
   yida-create-manage-view/
   yida-form-runtime-refresh/

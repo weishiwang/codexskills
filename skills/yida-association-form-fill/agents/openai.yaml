@@ -1,0 +1,8 @@
+interface:
+  display_name: "YiDA Association Fill"
+  short_description: "Fill YiDA association fields from selected records."
+  default_prompt: "Use $yida-association-form-fill to bind YiDA form JS that fills association form fields from selected related records."
+
+policy:
+  allow_implicit_invocation: true
+

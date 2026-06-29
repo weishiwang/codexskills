@@ -83,6 +83,44 @@ node C:/Users/Administrator/.codex/skills/yida-form-runtime-refresh/scripts/refr
 
 创建记录时不要手动给 `SerialNumberField` 赋值，应让宜搭自动生成。
 
+### `yida-association-form-fill`
+
+通过宜搭表单页面 JS，把选中的关联记录中的其它关联表单字段自动填充到当前表单。
+
+当表单需要以下模式时使用此技能：
+
+```text
+选择采购申请
+  -> 自动填充关联合同
+  -> 自动填充关联项目
+  -> 自动填充关联供应商
+```
+
+它沉淀了宜搭关联表单字段可用的设值格式：
+
+```js
+[
+  {
+    appType: 'APP_XXX',
+    formUuid: 'FORM-TARGET',
+    formType: 'receipt',
+    instanceId: 'FINST-XXX',
+    title: '显示标题',
+    subTitle: 'serial00001'
+  }
+]
+```
+
+重要注意事项：
+
+- 关联表单字段必须设置为对象数组
+- 保存值里使用 `instanceId`，不是 `formInstId`
+- 优先读取已选择源记录的详情，不要先用文本编号去跨表匹配
+- 宜搭可能把关联值放在 `_id` 字段里并做双层 JSON 编码，解析时要兼容
+- 将填充动作直接绑定到源关联字段的 `onChange`
+- 多个 schema patch 要顺序执行，避免后一次保存覆盖前一次保存
+- 完成后必须用真实浏览器验证，并移除调试日志
+
 ### `yida-integration-subtable`
 
 宜搭集成自动化模式：把明细记录同步到匹配主表记录的子表中。
@@ -247,6 +285,7 @@ node .\skills\yida-role-process-builder\scripts\role-process-builder.js publish 
 
 ```text
 skills/
+  yida-association-form-fill/
   yida-batch-data/
   yida-create-manage-view/
   yida-form-runtime-refresh/
