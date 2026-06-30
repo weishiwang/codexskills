@@ -60,6 +60,14 @@ skills/yida-batch-data/assets/framework/yidaapi.js
 
 它可以避免一种常见故障：流水号字段在 Schema 中看起来配置正确，但通过 API 创建记录时生成了 `0003` 这样的普通值，而不是按配置生成带前缀或日期规则的流水号。
 
+它也可以生成默认流水号规则补丁：
+
+```text
+<表单名称首字母前缀><yyyyMMdd><4 位序列号>
+```
+
+示例：`Purchase Order` -> `PO202606300001`。中文表单名建议显式传入 `--prefix`，避免错误猜测拼音首字母。
+
 核心规则：
 
 1. 读取当前线上 `getFormSchemaInfo`。
@@ -71,6 +79,12 @@ skills/yida-batch-data/assets/framework/yidaapi.js
 
 ```powershell
 node C:\Users\Administrator\.codex\skills\yida-form-runtime-refresh\scripts\refresh-form-runtime.js APP_XXX FORM-XXX
+```
+
+默认流水号规则补丁生成脚本：
+
+```powershell
+node C:\Users\Administrator\.codex\skills\yida-form-runtime-refresh\scripts\build-default-serial-rule-patch.js --app APP_XXX --form FORM-XXX --corp dingXXX --field serialNumberField_xxx --form-name "采购订单" --prefix CGDD --out .cache/openyida/project/default-serial-rule-patch.json
 ```
 
 在 Schema 修改后立即使用：

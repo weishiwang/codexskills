@@ -1,7 +1,7 @@
 interface:
   display_name: "YiDA Runtime Refresh"
-  short_description: "Refresh YiDA form runtime after schema edits."
-  default_prompt: "Use $yida-form-runtime-refresh to refresh a YiDA form runtime after schema changes while preserving serial number settings."
+  short_description: "Refresh YiDA form runtime and protect serial-number rules."
+  default_prompt: "Use $yida-form-runtime-refresh to refresh a YiDA form runtime after schema changes or to generate the default form-name-prefix/date/sequence serial-number rule."
 
 policy:
   allow_implicit_invocation: true

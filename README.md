@@ -60,6 +60,14 @@ Use this skill after modifying a YiDA form schema with `openyida create-form upd
 
 It prevents a common failure mode where a serial-number field looks correct in schema, but API-created records generate plain values such as `0003` instead of the configured prefix/date rule.
 
+It can also generate the default serial-number rule patch:
+
+```text
+<form-name initial prefix><yyyyMMdd><4-digit sequence>
+```
+
+Example: `Purchase Order` -> `PO202606300001`.
+
 The core rule is:
 
 1. Read the current live `getFormSchemaInfo`.
@@ -71,6 +79,12 @@ Main bundled script:
 
 ```powershell
 node C:\Users\Administrator\.codex\skills\yida-form-runtime-refresh\scripts\refresh-form-runtime.js APP_XXX FORM-XXX
+```
+
+Default serial rule patch helper:
+
+```powershell
+node C:\Users\Administrator\.codex\skills\yida-form-runtime-refresh\scripts\build-default-serial-rule-patch.js --app APP_XXX --form FORM-XXX --corp dingXXX --field serialNumberField_xxx --form-name "Purchase Order" --out .cache/openyida/project/default-serial-rule-patch.json
 ```
 
 Use it immediately after schema changes:
